@@ -48,6 +48,22 @@
         </div>
       </section>
 
+      <!-- Importar fichajes -->
+      <section class="section-block kairos-block">
+        <h2 class="section-title">Importar fichajes de KairosHR</h2>
+        <div class="kairos-form">
+          <div class="kairos-field">
+            <label for="kairos-dni">NIF / DNI del empleado</label>
+            <input type="text" id="kairos-dni" placeholder="Ej. 12345678Z" maxlength="9" autocomplete="off" />
+          </div>
+          <button class="btn-kairos" id="btn-kairos">
+            <span class="btn-kairos-icon">⬇</span>
+            Cargar fichajes
+          </button>
+        </div>
+        <p class="kairos-status" id="kairos-status"></p>
+      </section>
+
       <!-- Registros -->
       <section class="section-block">
         <h2 class="section-title">Registros del día</h2>
@@ -106,6 +122,7 @@
     <p>Calculador de Jornada Laboral &mdash; Uso interno</p>
   </footer>
 
+  <script src="kairos.service.js"></script>
   <script src="calc.js"></script>
 </body>
 </html>

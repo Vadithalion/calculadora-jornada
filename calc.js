@@ -182,3 +182,79 @@ function calcular() {
   resultado.hidden = false;
   resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+// ── KairosHR: importar fichajes ───────────────────────────────────────────────
+const btnKairos    = document.getElementById('btn-kairos');
+const kairosStatus = document.getElementById('kairos-status');
+const kairosDniEl  = document.getElementById('kairos-dni');
+
+btnKairos.addEventListener('click', async () => {
+  const nif = kairosDniEl.value.trim().toUpperCase();
+
+  if (!nif) {
+    setKairosStatus('error', 'Introduce el NIF/DNI del empleado.');
+    kairosDniEl.focus();
+    return;
+  }
+
+  setKairosStatus('loading', 'Conectando con KairosHR…');
+  btnKairos.disabled = true;
+
+  try {
+    // Fecha de hoy en formato YYYY-MM-DD
+    const hoy = new Date().toISOString().slice(0, 10);
+
+    // 1. Obtener fichajes del día (date_start = date_end = hoy, filtrado por NIF)
+    KairosService.logout(); // forzar login fresco al cambiar de usuario
+    const records = await KairosService.getCheckins({
+      nif,
+      date_start: hoy,
+      date_end:   hoy,
+    });
+
+    if (!records.length) {
+      setKairosStatus('warn', 'No se encontraron fichajes para hoy.');
+      return;
+    }
+
+    // 2. Parsear a pares entrada/salida, filtrando por NIF
+    const pares = KairosService.parsearFichajes(records, nif);
+
+    if (!pares.length) {
+      setKairosStatus('warn',
+        `Se recibieron ${records.length} registro(s) pero no se pudieron interpretar como pares de entrada/salida.`);
+      return;
+    }
+
+    // 3. Rellenar filas (limpiar las existentes primero)
+    registrosEl.innerHTML = '';
+    filaCount = 0;
+
+    pares.forEach(({ entrada, salida }) => agregarFila(entrada, salida));
+
+    // Si el último tramo ya tiene salida, añadir una fila vacía para el tramo actual
+    const ultimaFila   = registrosEl.lastElementChild;
+    const ultimaSalida = ultimaFila?.querySelector('.salida');
+    if (ultimaSalida && ultimaSalida.value) {
+      agregarFila();
+    }
+
+    setKairosStatus('ok', `✓ ${pares.length} tramo(s) importado(s) correctamente.`);
+
+  } catch (err) {
+    console.error('[KairosHR]', err);
+    setKairosStatus('error', err.message || 'Error inesperado al conectar con la API.');
+  } finally {
+    btnKairos.disabled = false;
+  }
+});
+
+/**
+ * Actualiza el mensaje de estado del bloque KairosHR.
+ * @param {'loading'|'ok'|'warn'|'error'} tipo
+ * @param {string} texto
+ */
+function setKairosStatus(tipo, texto) {
+  kairosStatus.textContent = texto;
+  kairosStatus.className = `kairos-status kairos-status--${tipo}`;
+}
