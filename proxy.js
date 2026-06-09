@@ -74,7 +74,7 @@ const server = http.createServer((req, res) => {
 
           if (matchedUser) {
             res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders() });
-            res.end(JSON.stringify({ status: 'OK', valid: true }));
+            res.end(JSON.stringify({ status: 'OK', valid: true, nombre: matchedUser.nombre }));
           } else {
             res.writeHead(401, { 'Content-Type': 'application/json', ...corsHeaders() });
             res.end(JSON.stringify({ status: 'ERROR', message: 'DNI o código de acceso incorrectos.' }));
