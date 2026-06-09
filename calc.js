@@ -197,6 +197,9 @@ btnKairos.addEventListener('click', async () => {
     return;
   }
 
+  // Guardar el DNI en localStorage si pasa el filtro de no estar vacío
+  localStorage.setItem('kairos_dni', nif);
+
   setKairosStatus('loading', 'Conectando con KairosHR…');
   btnKairos.disabled = true;
 
@@ -258,3 +261,17 @@ function setKairosStatus(tipo, texto) {
   kairosStatus.textContent = texto;
   kairosStatus.className = `kairos-status kairos-status--${tipo}`;
 }
+
+function cargarDniGuardado() {
+  const dniGuardado = localStorage.getItem('kairos_dni');
+  const inputDni = document.getElementById('kairos-dni') || kairosDniEl;
+  
+  if (dniGuardado && inputDni) {
+    inputDni.value = dniGuardado;
+  }
+}
+
+// Esto asegura que el HTML esté listo antes de pintar el DNI
+document.addEventListener('DOMContentLoaded', () => {
+  cargarDniGuardado();
+});
