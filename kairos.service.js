@@ -1,8 +1,11 @@
 // ── KairosHR Service ──────────────────────────────────────────────────────────
-// API: https://portal.kairoshr.es/api-service/v1
+// API: https://portal.kairoshr.es/api-service/v1  (a través del proxy → proxy.js)
 
 const KairosService = (() => {
-  const BASE_URL = 'https://portal.kairoshr.es/api-service/v1';
+  // URL base vacía → rutas relativas (/login, /checkin/list…)
+  // El proxy (proxy.js) sirve el HTML y reenvía las llamadas API a KairosHR.
+  // Así funciona con cualquier IP de servidor sin tocar este fichero.
+  const BASE_URL = '';
   const COMPANY_ID = 9012;
   const API_KEY = '85bd5878-fcdd-44ff-aee2-45721040d849'; // campo "key" del login
 
