@@ -246,9 +246,14 @@ btnKairos.addEventListener('click', async () => {
     });
 
     if (!authRes.ok) {
+      document.getElementById('kairos-dni-label').textContent = 'NIF / DNI del empleado';
       const authErr = await authRes.json().catch(() => ({}));
       throw new Error(authErr.message || 'Datos erróneos.');
     }
+
+    const authData = await authRes.json();
+    const nombre = authData.nombre || 'empleado';
+    document.getElementById('kairos-dni-label').textContent = `¡Hola, ${nombre}!`;
 
     localStorage.setItem('kairos_dni', nif);
     setKairosStatus('loading', 'Conectando con KairosHR…');
