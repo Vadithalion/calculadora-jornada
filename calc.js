@@ -165,34 +165,49 @@ function calcular() {
     return;
   }
 
-  if (ultimaEntrada === null) {
-    errorMsg.textContent = 'Deja vacía la última salida para calcular la hora de fin de jornada.';
-    return;
+  // --- NUEVA LÓGICA DE CÁLCULO ---
+  const yaCompletada = trabajadoSecs >= jornadaSecs;
+
+  if (yaCompletada) {
+    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
+    document.getElementById('res-restante').innerHTML = `
+      00:00:00 <br>
+      <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
+        (¡Jornada completada!)
+      </small>
+    `;
+    document.getElementById('res-salida').textContent = 'Completada';
+  } else if (ultimaEntrada === null) {
+    // Fichado fuera y jornada sin terminar (p. ej. descanso no laboral)
+    const restanteSecs = jornadaSecs - trabajadoSecs;
+    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
+    document.getElementById('res-restante').innerHTML = `
+      ${formatSecs(restanteSecs)} <br>
+      <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
+        (Actualmente fuera)
+      </small>
+    `;
+    document.getElementById('res-salida').textContent = 'Indeterminada';
+  } else {
+    // Fichado dentro y jornada sin terminar
+    const restanteSecs = jornadaSecs - trabajadoSecs;
+    const salidaSecs   = ultimaEntrada + restanteSecs;
+
+    const ahora = new Date();
+    const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
+    
+    let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
+    if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0;
+
+    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
+    document.getElementById('res-restante').innerHTML = `
+      ${formatSecs(restanteSecs)} <br>
+      <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
+        (${formatSecs(restanteDesdeAhoraSecs)} desde ahora)
+      </small>
+    `;
+    document.getElementById('res-salida').textContent = secsToHHMMSS(salidaSecs);
   }
-
-  // Calcular tiempos generales
-  const restanteSecs = jornadaSecs - trabajadoSecs;
-  const salidaSecs   = ultimaEntrada + restanteSecs;
-
-  // --- NUEVO: Calcular jornada restante desde la hora actual (consulta) ---
-  const ahora = new Date();
-  const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
-  
-  let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
-  if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0; // Si ya se pasó la hora de salida
-
-  // Mostrar resultado en el HTML
-  document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
-  
-  // Modificamos el recuadro de restante para pintar ambos datos
-  document.getElementById('res-restante').innerHTML = `
-    ${formatSecs(restanteSecs)} <br>
-    <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
-      (${formatSecs(restanteDesdeAhoraSecs)} desde ahora)
-    </small>
-  `;
-  
-  document.getElementById('res-salida').textContent    = secsToHHMMSS(salidaSecs);
 
   resultado.hidden = false;
   resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
