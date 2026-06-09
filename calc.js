@@ -222,6 +222,7 @@ const kairosCodeEl = document.getElementById('kairos-code');
 btnKairos.addEventListener('click', async () => {
   const nif = kairosDniEl.value.trim().toUpperCase();
   const codigo = kairosCodeEl.value.trim();
+  kairosCodeEl.value = '';
 
   if (!nif) {
     setKairosStatus('error', 'Introduce el NIF/DNI del empleado.');
