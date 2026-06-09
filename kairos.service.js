@@ -51,8 +51,8 @@ const KairosService = (() => {
    * Realiza login automáticamente si no hay token activo.
    *
    * Limitaciones de la API:
-   *   - Sin NIF:    máximo 1 mes entre date_start y date_end
-   *   - Con NIF:    máximo 3 meses entre date_start y date_end
+   * - Sin NIF:    máximo 1 mes entre date_start y date_end
+   * - Con NIF:    máximo 3 meses entre date_start y date_end
    *
    * @param {object}  opts
    * @param {string}  [opts.nif]        - NIF del empleado (sin él devuelve todos)
@@ -95,13 +95,64 @@ const KairosService = (() => {
     return json.data?.records ?? [];
   }
 
+  // ── Obtener horario planificado (Jornada) ──────────────────────────────────
+  /**
+   * Obtiene la jornada planificada para un empleado en un día concreto.
+   *
+   * @param {object} opts
+   * @param {string} [opts.nif]        - NIF del empleado
+   * @param {string} [opts.date_start] - Fecha inicio YYYY-MM-DD (por defecto: hoy)
+   * @param {string} [opts.date_end]   - Fecha fin   YYYY-MM-DD (por defecto: +1 semana)
+   * @returns {Promise<number|null>} Horas totales planificadas en formato numérico o null si no hay datos
+   */
+  async function getSchedule({ nif, date_start, date_end } = {}) {
+    if (!_authToken) await login();
+
+    const params = new URLSearchParams();
+    if (nif) params.set('nif', nif);
+    if (date_start) params.set('date_start', date_start);
+    if (date_end) params.set('date_end', date_end);
+
+    const res = await fetch(`${BASE_URL}/employees/schedules?${params}`, {
+      method: 'GET',
+      headers: { 'Authorization': `Bearer ${_authToken}` },
+    });
+
+    if (res.status === 401) {
+      // Token expirado → renovar y reintentar una vez
+      _authToken = null;
+      await login();
+      return getSchedule({ nif, date_start, date_end });
+    }
+
+    if (!res.ok) {
+      const msg = await res.text().catch(() => '');
+      throw new Error(`Error al obtener el horario (${res.status})${msg ? ': ' + msg : ''}.`);
+    }
+
+    const json = await res.json();
+
+    if (json.status !== 'OK') {
+      throw new Error(`La API rechazó la petición de horario: ${json.message ?? json.code ?? 'error desconocido'}.`);
+    }
+
+    const records = json.data?.records ?? [];
+    if (records.length > 0) {
+      // Filtrar por NIF en local si vinieran de más empleados, o tomar el primero
+      const record = nif ? records.find(r => r.nif === nif) : records[0];
+      return record ? record.hours : null;
+    }
+
+    return null;
+  }
+
   // ── Parsear fichajes → pares entrada/salida ───────────────────────────────
   /**
    * Convierte la lista de registros de /checkin/list en pares { entrada, salida }
    * listos para rellenar las filas de la calculadora.
    *
    * Estructura real de cada registro:
-   *   { nif, action: "entry"|"exit", date: "YYYY-MM-DD", time: "HH:MM:SS", ... }
+   * { nif, action: "entry"|"exit", date: "YYYY-MM-DD", time: "HH:MM:SS", ... }
    *
    * @param {object[]} records  - Array devuelto por getCheckins()
    * @param {string}   [nif]    - Si se pasa, filtra solo los registros de ese NIF
@@ -157,5 +208,5 @@ const KairosService = (() => {
   }
 
   // ── API pública ───────────────────────────────────────────────────────────
-  return { login, getCheckins, parsearFichajes, logout };
+  return { login, getCheckins, getSchedule, parsearFichajes, logout };
 })();

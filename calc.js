@@ -109,7 +109,7 @@ function calcular() {
   const h = parseInt(inputHoras.value);
   const m = parseInt(inputMinutos.value);
   if (isNaN(h) || isNaN(m) || h < 0 || m < 0 || m > 59) {
-    errorMsg.textContent = 'Introduce un valor de jornada válido (ej. 8h 15m).';
+    errorMsg.textContent = 'Introduce un value de jornada válido (ej. 8h 15m).';
     return;
   }
   const jornadaSecs = h * 3600 + m * 60;
@@ -170,20 +170,35 @@ function calcular() {
     return;
   }
 
-  // Calcular
+  // Calcular tiempos generales
   const restanteSecs = jornadaSecs - trabajadoSecs;
   const salidaSecs   = ultimaEntrada + restanteSecs;
 
-  // Mostrar resultado
+  // --- NUEVO: Calcular jornada restante desde la hora actual (consulta) ---
+  const ahora = new Date();
+  const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
+  
+  let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
+  if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0; // Si ya se pasó la hora de salida
+
+  // Mostrar resultado en el HTML
   document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
-  document.getElementById('res-restante').textContent  = formatSecs(restanteSecs);
+  
+  // Modificamos el recuadro de restante para pintar ambos datos
+  document.getElementById('res-restante').innerHTML = `
+    ${formatSecs(restanteSecs)} <br>
+    <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
+      (${formatSecs(restanteDesdeAhoraSecs)} desde ahora)
+    </small>
+  `;
+  
   document.getElementById('res-salida').textContent    = secsToHHMMSS(salidaSecs);
 
   resultado.hidden = false;
   resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-// ── KairosHR: importar fichajes ───────────────────────────────────────────────
+// ── KairosHR: importar fichajes y jornada ───────────────────────────────────────
 const btnKairos    = document.getElementById('btn-kairos');
 const kairosStatus = document.getElementById('kairos-status');
 const kairosDniEl  = document.getElementById('kairos-dni');
@@ -197,52 +212,57 @@ btnKairos.addEventListener('click', async () => {
     return;
   }
 
-  // Guardar el DNI en localStorage si pasa el filtro de no estar vacío
   localStorage.setItem('kairos_dni', nif);
-
   setKairosStatus('loading', 'Conectando con KairosHR…');
   btnKairos.disabled = true;
 
   try {
-    // Fecha de hoy en formato YYYY-MM-DD
     const hoy = new Date().toISOString().slice(0, 10);
+    KairosService.logout();
 
-    // 1. Obtener fichajes del día (date_start = date_end = hoy, filtrado por NIF)
-    KairosService.logout(); // forzar login fresco al cambiar de usuario
-    const records = await KairosService.getCheckins({
-      nif,
-      date_start: hoy,
-      date_end:   hoy,
-    });
+    const [records, horasPlanificadas] = await Promise.all([
+      KairosService.getCheckins({ nif, date_start: hoy, date_end: hoy }),
+      KairosService.getSchedule({ nif, date_start: hoy, date_end: hoy })
+    ]);
+
+    let infoJornada = '';
+    if (horasPlanificadas !== null && !isNaN(horasPlanificadas)) {
+      const totalMinutosTotal = Math.round(horasPlanificadas * 60);
+      const hConfig = Math.floor(totalMinutosTotal / 60);
+      const mConfig = totalMinutosTotal % 60;
+
+      inputHoras.value = hConfig;
+      inputMinutos.value = mConfig;
+
+      actualizarPreview();
+      infoJornada = ` e introducida jornada de ${hConfig}h ${String(mConfig).padStart(2, '0')}m`;
+    }
 
     if (!records.length) {
-      setKairosStatus('warn', 'No se encontraron fichajes para hoy.');
+      setKairosStatus('warn', `No se encontraron fichajes para hoy${infoJornada ? '.' + infoJornada : '.'}`);
       return;
     }
 
-    // 2. Parsear a pares entrada/salida, filtrando por NIF
     const pares = KairosService.parsearFichajes(records, nif);
 
     if (!pares.length) {
       setKairosStatus('warn',
-        `Se recibieron ${records.length} registro(s) pero no se pudieron interpretar como pares de entrada/salida.`);
+        `Se recibieron ${records.length} registro(s) pero no se interpretaron como pares. Horario actualizado.`);
       return;
     }
 
-    // 3. Rellenar filas (limpiar las existentes primero)
     registrosEl.innerHTML = '';
     filaCount = 0;
 
     pares.forEach(({ entrada, salida }) => agregarFila(entrada, salida));
 
-    // Si el último tramo ya tiene salida, añadir una fila vacía para el tramo actual
     const ultimaFila   = registrosEl.lastElementChild;
     const ultimaSalida = ultimaFila?.querySelector('.salida');
     if (ultimaSalida && ultimaSalida.value) {
       agregarFila();
     }
 
-    setKairosStatus('ok', `✓ ${pares.length} tramo(s) importado(s) correctamente.`);
+    setKairosStatus('ok', `✓ ${pares.length} tramo(s) importado(s) correctamente${infoJornada}.`);
 
   } catch (err) {
     console.error('[KairosHR]', err);
@@ -252,11 +272,6 @@ btnKairos.addEventListener('click', async () => {
   }
 });
 
-/**
- * Actualiza el mensaje de estado del bloque KairosHR.
- * @param {'loading'|'ok'|'warn'|'error'} tipo
- * @param {string} texto
- */
 function setKairosStatus(tipo, texto) {
   kairosStatus.textContent = texto;
   kairosStatus.className = `kairos-status kairos-status--${tipo}`;
@@ -271,7 +286,6 @@ function cargarDniGuardado() {
   }
 }
 
-// Esto asegura que el HTML esté listo antes de pintar el DNI
 document.addEventListener('DOMContentLoaded', () => {
   cargarDniGuardado();
 });
