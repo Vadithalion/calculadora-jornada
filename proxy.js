@@ -19,7 +19,7 @@ const API_URL = 'https://portal.kairoshr.es/api-service/v1';
 const API     = new (require('url').URL)(API_URL);
 
 // Rutas que se reenvían a la API de KairosHR
-const API_PREFIXES = ['/login', '/checkin'];
+const API_PREFIXES = ['/login', '/checkin', '/employees'];
 
 // Tipos MIME para los ficheros estáticos
 const MIME = {
@@ -33,6 +33,60 @@ const MIME = {
 // ── Servidor ──────────────────────────────────────────────────────────────────
 const server = http.createServer((req, res) => {
   const reqPath = req.url.split('?')[0]; // ruta sin query string
+
+  // ── Interceptar validación local de usuarios ───────────────────────────
+  if (reqPath === '/validate-user' && req.method === 'POST') {
+    let body = '';
+    req.on('data', chunk => { body += chunk; });
+    req.on('end', () => {
+      try {
+        const { dni, codigo } = JSON.parse(body);
+        if (!dni || !codigo) {
+          res.writeHead(400, { 'Content-Type': 'application/json', ...corsHeaders() });
+          res.end(JSON.stringify({ status: 'ERROR', message: 'Falta DNI o código' }));
+          return;
+        }
+
+        const usersPath = path.join(__dirname, 'users.json');
+        fs.readFile(usersPath, 'utf8', (err, data) => {
+          if (err) {
+            console.error('Error al leer users.json:', err);
+            res.writeHead(500, { 'Content-Type': 'application/json', ...corsHeaders() });
+            res.end(JSON.stringify({ status: 'ERROR', message: 'Error interno del servidor al verificar credenciales.' }));
+            return;
+          }
+
+          let users = [];
+          try {
+            users = JSON.parse(data);
+          } catch (e) {
+            console.error('Error al parsear users.json:', e);
+          }
+
+          const normalizedDni = dni.trim().toUpperCase();
+          const normalizedCodigo = codigo.trim();
+
+          const matchedUser = users.find(u => {
+            const uDni = (u.dni || '').trim().toUpperCase();
+            const uCodigo = (u.codigo || '').trim();
+            return uDni === normalizedDni && uCodigo === normalizedCodigo;
+          });
+
+          if (matchedUser) {
+            res.writeHead(200, { 'Content-Type': 'application/json', ...corsHeaders() });
+            res.end(JSON.stringify({ status: 'OK', valid: true }));
+          } else {
+            res.writeHead(401, { 'Content-Type': 'application/json', ...corsHeaders() });
+            res.end(JSON.stringify({ status: 'ERROR', message: 'DNI o código de acceso incorrectos.' }));
+          }
+        });
+      } catch (err) {
+        res.writeHead(400, { 'Content-Type': 'application/json', ...corsHeaders() });
+        res.end(JSON.stringify({ status: 'ERROR', message: 'Petición inválida' }));
+      }
+    });
+    return;
+  }
 
   // ── 1. Rutas de API → proxy hacia KairosHR ──────────────────────────────
   const isApi = API_PREFIXES.some(p => reqPath.startsWith(p));

@@ -202,21 +202,42 @@ function calcular() {
 const btnKairos    = document.getElementById('btn-kairos');
 const kairosStatus = document.getElementById('kairos-status');
 const kairosDniEl  = document.getElementById('kairos-dni');
+const kairosCodeEl = document.getElementById('kairos-code');
 
 btnKairos.addEventListener('click', async () => {
   const nif = kairosDniEl.value.trim().toUpperCase();
+  const codigo = kairosCodeEl.value.trim();
 
   if (!nif) {
     setKairosStatus('error', 'Introduce el NIF/DNI del empleado.');
     kairosDniEl.focus();
     return;
   }
+  if (!codigo) {
+    setKairosStatus('error', 'Introduce el código de acceso.');
+    kairosCodeEl.focus();
+    return;
+  }
 
-  localStorage.setItem('kairos_dni', nif);
-  setKairosStatus('loading', 'Conectando con KairosHR…');
+  setKairosStatus('loading', 'Validando credenciales…');
   btnKairos.disabled = true;
 
   try {
+    // 1. Validar contra el backend local /validate-user
+    const authRes = await fetch('/validate-user', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ dni: nif, codigo })
+    });
+
+    if (!authRes.ok) {
+      const authErr = await authRes.json().catch(() => ({}));
+      throw new Error(authErr.message || 'Datos erróneos.');
+    }
+
+    localStorage.setItem('kairos_dni', nif);
+    setKairosStatus('loading', 'Conectando con KairosHR…');
+
     const hoy = new Date().toISOString().slice(0, 10);
     KairosService.logout();
 
