@@ -8,7 +8,7 @@
     {
         "nombre": "Rebeca",
         "apellido": "Soto",
-        "dni": "24244156",
+        "dni": "29211235Q",
         "codigo": "1988"
     },
     {
@@ -16,5 +16,11 @@
         "apellido": "Martinez",
         "dni": "21699590X",
         "codigo": "2008"
+    },
+    {
+        "nombre": "Bilal",
+        "apellido": "Naim",
+        "dni": "23939154H",
+        "codigo": "1902"
     }
 ]
