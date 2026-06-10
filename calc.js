@@ -199,7 +199,7 @@ function calcular() {
     let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
     if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0;
 
-    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
+    document.getElementById('res-trabajado').textContent = formatSecs(jornadaSecs - restanteDesdeAhoraSecs);
     document.getElementById('res-restante').innerHTML = `
       ${formatSecs(restanteSecs)} <br>
       <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">

@@ -160,7 +160,7 @@ function corsHeaders() {
 }
 
 // ── Arranque ──────────────────────────────────────────────────────────────────
-server.listen(PORT, '0.0.0.0', () => {
+server.listen(PORT, () => {
   const { networkInterfaces } = require('os');
   const nets = networkInterfaces();
   const ips = Object.values(nets).flat()

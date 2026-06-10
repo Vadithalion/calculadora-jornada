@@ -6,9 +6,15 @@
         "codigo": "6666"
     },
     {
-        "nombre": "Korben",
-        "apellido": "Dallas",
+        "nombre": "Rebeca",
+        "apellido": "Soto",
         "dni": "24244156",
-        "codigo": "2323"
+        "codigo": "1988"
+    },
+    {
+        "nombre": "Kilian",
+        "apellido": "Martinez",
+        "dni": "21699590X",
+        "codigo": "2008"
     }
 ]
