@@ -165,21 +165,42 @@ function calcular() {
     return;
   }
 
-  const yaCompletada = trabajadoSecs >= jornadaSecs;
+  // --- NUEVA LÓGICA DE CÁLCULO ---
+  const ahora = new Date();
+  const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
+
+  const totalTrabajadoSecs = trabajadoSecs + (ultimaEntrada !== null ? (ahoraSecs - ultimaEntrada) : 0);
+  const yaCompletada = totalTrabajadoSecs >= jornadaSecs;
+
+  document.getElementById('res-trabajado').textContent = formatSecs(totalTrabajadoSecs);
 
   if (yaCompletada) {
-    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
-    document.getElementById('res-restante').innerHTML = `
-      00:00:00 <br>
-      <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
-        (¡Jornada completada!)
-      </small>
-    `;
-    document.getElementById('res-salida').textContent = 'Completada';
+    if (ultimaEntrada !== null) {
+      // Fichado dentro y jornada completada (horas extra en curso)
+      const restanteSecs = jornadaSecs - trabajadoSecs;
+      const salidaSecs   = ultimaEntrada + restanteSecs;
+      const extraSecs    = totalTrabajadoSecs - jornadaSecs;
+
+      document.getElementById('res-restante').innerHTML = `
+        00:00:00 <br>
+        <small style="font-size: 0.75em; font-weight: bold; color: var(--success, #10b981);">
+          (+${formatSecs(extraSecs)} extra)
+        </small>
+      `;
+      document.getElementById('res-salida').textContent = secsToHHMMSS(salidaSecs);
+    } else {
+      // Fichado fuera y jornada completada
+      document.getElementById('res-restante').innerHTML = `
+        00:00:00 <br>
+        <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
+          (¡Jornada completada!)
+        </small>
+      `;
+      document.getElementById('res-salida').textContent = 'Completada';
+    }
   } else if (ultimaEntrada === null) {
     // Fichado fuera y jornada sin terminar (p. ej. descanso no laboral)
     const restanteSecs = jornadaSecs - trabajadoSecs;
-    document.getElementById('res-trabajado').textContent = formatSecs(trabajadoSecs);
     document.getElementById('res-restante').innerHTML = `
       ${formatSecs(restanteSecs)} <br>
       <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
@@ -190,15 +211,11 @@ function calcular() {
   } else {
     // Fichado dentro y jornada sin terminar
     const restanteSecs = jornadaSecs - trabajadoSecs;
-    const salidaSecs = ultimaEntrada + restanteSecs;
-
-    const ahora = new Date();
-    const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
+    const salidaSecs   = ultimaEntrada + restanteSecs;
 
     let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
     if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0;
 
-    document.getElementById('res-trabajado').textContent = formatSecs(jornadaSecs - restanteDesdeAhoraSecs);
     document.getElementById('res-restante').innerHTML = `
       ${formatSecs(restanteSecs)} <br>
       <small style="font-size: 0.75em; opacity: 0.8; font-weight: normal;">
