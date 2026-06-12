@@ -225,6 +225,34 @@ function calcular() {
     document.getElementById('res-salida').textContent = secsToHHMMSS(salidaSecs);
   }
 
+  // --- ACTUALIZAR CÍRCULO DE PROGRESO ---
+  const progressPercent = Math.min(totalTrabajadoSecs / jornadaSecs, 1);
+  const circle = document.querySelector('.progress-ring__circle');
+  if (circle) {
+    const radius = circle.r.baseVal.value;
+    const circumference = 2 * Math.PI * radius;
+    const offset = circumference - (progressPercent * circumference);
+    circle.style.strokeDasharray = `${circumference} ${circumference}`;
+    circle.style.strokeDashoffset = offset;
+
+    if (yaCompletada) {
+      circle.classList.add('completado');
+    } else {
+      circle.classList.remove('completado');
+    }
+  }
+
+  const progressIcon = document.getElementById('progress-icon');
+  if (progressIcon) {
+    if (yaCompletada) {
+      progressIcon.textContent = '🎉';
+    } else if (ultimaEntrada === null) {
+      progressIcon.textContent = '⏳';
+    } else {
+      progressIcon.textContent = '🕐';
+    }
+  }
+
   resultado.hidden = false;
   resultado.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }

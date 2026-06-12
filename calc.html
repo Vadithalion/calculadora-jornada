@@ -1,15 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calculador de Jornada Laboral</title>
-  <meta name="description" content="Calcula tu jornada de trabajo restante y hora de salida a partir de tus registros de entrada y salida." />
+  <meta name="description"
+    content="Calcula tu jornada de trabajo restante y hora de salida a partir de tus registros de entrada y salida." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="calc.css" />
 </head>
+
 <body>
 
   <!-- Header -->
@@ -58,7 +61,8 @@
           </div>
           <div class="kairos-field">
             <label for="kairos-code">Código de acceso</label>
-            <input type="password" id="kairos-code" placeholder="••••" maxlength="4" autocomplete="current-password" pattern="[0-9]*" inputmode="numeric" />
+            <input type="password" id="kairos-code" placeholder="••••" maxlength="4" autocomplete="current-password"
+              pattern="[0-9]*" inputmode="numeric" />
           </div>
           <button class="btn-kairos" id="btn-kairos">
             <span class="btn-kairos-icon">⬇</span>
@@ -95,26 +99,36 @@
 
       <!-- Resultado -->
       <div class="resultado" id="resultado" hidden>
-        <div class="resultado-item">
-          <div class="resultado-icon">🕐</div>
-          <div class="resultado-data">
-            <span class="res-label">Tiempo trabajado</span>
-            <span class="res-valor" id="res-trabajado">—</span>
+        <div class="resultado-info">
+          <div class="resultado-item">
+            <div class="resultado-icon">🕐</div>
+            <div class="resultado-data">
+              <span class="res-label">Tiempo trabajado</span>
+              <span class="res-valor" id="res-trabajado">—</span>
+            </div>
+          </div>
+          <div class="resultado-item">
+            <div class="resultado-icon">⏳</div>
+            <div class="resultado-data">
+              <span class="res-label">Jornada restante</span>
+              <span class="res-valor" id="res-restante">—</span>
+            </div>
+          </div>
+          <div class="resultado-item highlight">
+            <div class="resultado-icon">🚪</div>
+            <div class="resultado-data">
+              <span class="res-label">Hora de salida</span>
+              <span class="res-valor grande" id="res-salida">—</span>
+            </div>
           </div>
         </div>
-        <div class="resultado-item">
-          <div class="resultado-icon">⏳</div>
-          <div class="resultado-data">
-            <span class="res-label">Jornada restante</span>
-            <span class="res-valor" id="res-restante">—</span>
-          </div>
-        </div>
-        <div class="resultado-item highlight">
-          <div class="resultado-icon">🚪</div>
-          <div class="resultado-data">
-            <span class="res-label">Hora de salida</span>
-            <span class="res-valor grande" id="res-salida">—</span>
-          </div>
+        <div class="resultado-progress">
+          <svg class="progress-ring" width="120" height="120">
+            <circle class="progress-ring__background" stroke="rgba(8,15,30,0.06)" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"/>
+            <circle class="progress-ring__circle" stroke="yellowgreen" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"
+                    stroke-dasharray="301.6" stroke-dashoffset="301.6" />
+          </svg>
+          <div class="progress-icon" id="progress-icon">🕐</div>
         </div>
       </div>
 
@@ -129,4 +143,5 @@
   <script src="kairos.service.js"></script>
   <script src="calc.js" defer></script>
 </body>
+
 </html>

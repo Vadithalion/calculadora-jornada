@@ -451,6 +451,54 @@ body {
   border-radius: var(--radius-lg);
   overflow: hidden;
   animation: fadeIn 0.35s ease;
+  background: #fff;
+  display: flex;
+}
+
+.resultado-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.resultado-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  border-left: 1px solid var(--cream-d);
+  background: #faf8f5;
+  position: relative;
+  min-width: 170px;
+}
+
+.progress-ring {
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.progress-ring__circle {
+  stroke: yellowgreen;
+  transition: stroke-dashoffset 0.35s ease, stroke 0.35s ease;
+}
+
+.progress-ring__circle.completado {
+  stroke: var(--success, #10b981);
+}
+
+.progress-icon {
+  position: absolute;
+  font-size: 2.2rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.resultado-progress:hover .progress-icon {
+  transform: scale(1.15);
 }
 
 @keyframes fadeIn {
@@ -682,4 +730,6 @@ body {
   .header-inner { flex-direction: column; align-items: flex-start; gap: 4px; }
   .kairos-form { flex-direction: column; align-items: stretch; }
   .btn-kairos { width: 100%; justify-content: center; }
+  .resultado { flex-direction: column-reverse; }
+  .resultado-progress { border-left: none; border-bottom: 1px solid var(--cream-d); padding: 20px; min-width: auto; }
 }
