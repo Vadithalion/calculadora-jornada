@@ -1,11 +1,11 @@
 // ── Referencias DOM ──────────────────────────────────────────────────────────
-const registrosEl   = document.getElementById('registros');
-const btnAdd        = document.getElementById('btn-add');
-const btnCalc       = document.getElementById('btn-calc');
-const errorMsg      = document.getElementById('error-msg');
-const resultado     = document.getElementById('resultado');
-const inputHoras    = document.getElementById('jornada-horas');
-const inputMinutos  = document.getElementById('jornada-minutos');
+const registrosEl = document.getElementById('registros');
+const btnAdd = document.getElementById('btn-add');
+const btnCalc = document.getElementById('btn-calc');
+const errorMsg = document.getElementById('error-msg');
+const resultado = document.getElementById('resultado');
+const inputHoras = document.getElementById('jornada-horas');
+const inputMinutos = document.getElementById('jornada-minutos');
 const configPreview = document.getElementById('config-preview');
 
 // ── Preview de jornada ────────────────────────────────────────────────────────
@@ -122,7 +122,7 @@ function calcular() {
   const filas = [...registrosEl.querySelectorAll('.fila')];
   const pares = filas.map(f => ({
     entrada: parseTime(f.querySelector('.entrada').value),
-    salida:  parseTime(f.querySelector('.salida').value),
+    salida: parseTime(f.querySelector('.salida').value),
   }));
 
   // Validaciones
@@ -165,7 +165,6 @@ function calcular() {
     return;
   }
 
-  // --- NUEVA LÓGICA DE CÁLCULO ---
   const yaCompletada = trabajadoSecs >= jornadaSecs;
 
   if (yaCompletada) {
@@ -191,11 +190,11 @@ function calcular() {
   } else {
     // Fichado dentro y jornada sin terminar
     const restanteSecs = jornadaSecs - trabajadoSecs;
-    const salidaSecs   = ultimaEntrada + restanteSecs;
+    const salidaSecs = ultimaEntrada + restanteSecs;
 
     const ahora = new Date();
     const ahoraSecs = ahora.getHours() * 3600 + ahora.getMinutes() * 60 + ahora.getSeconds();
-    
+
     let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
     if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0;
 
@@ -214,9 +213,9 @@ function calcular() {
 }
 
 // ── KairosHR: importar fichajes y jornada ───────────────────────────────────────
-const btnKairos    = document.getElementById('btn-kairos');
+const btnKairos = document.getElementById('btn-kairos');
 const kairosStatus = document.getElementById('kairos-status');
-const kairosDniEl  = document.getElementById('kairos-dni');
+const kairosDniEl = document.getElementById('kairos-dni');
 const kairosCodeEl = document.getElementById('kairos-code');
 
 btnKairos.addEventListener('click', async () => {
@@ -298,7 +297,7 @@ btnKairos.addEventListener('click', async () => {
 
     pares.forEach(({ entrada, salida }) => agregarFila(entrada, salida));
 
-    const ultimaFila   = registrosEl.lastElementChild;
+    const ultimaFila = registrosEl.lastElementChild;
     const ultimaSalida = ultimaFila?.querySelector('.salida');
     if (ultimaSalida && ultimaSalida.value) {
       agregarFila();
@@ -322,7 +321,7 @@ function setKairosStatus(tipo, texto) {
 function cargarDniGuardado() {
   const dniGuardado = localStorage.getItem('kairos_dni');
   const inputDni = document.getElementById('kairos-dni') || kairosDniEl;
-  
+
   if (dniGuardado && inputDni) {
     inputDni.value = dniGuardado;
   }
