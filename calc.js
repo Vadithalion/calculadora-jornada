@@ -178,14 +178,18 @@ function calcular() {
     if (ultimaEntrada !== null) {
       // Fichado dentro y jornada completada (horas extra en curso)
       const restanteSecs = jornadaSecs - trabajadoSecs;
-      const salidaSecs   = ultimaEntrada + restanteSecs;
-      const extraSecs    = totalTrabajadoSecs - jornadaSecs;
+      const salidaSecs = ultimaEntrada + restanteSecs;
+      const extraSecs = totalTrabajadoSecs - jornadaSecs;
+      const mensajeExtra = localStorage.getItem('kairos_mensaje_extra') || 'Vete a que te de el sol!';
 
       document.getElementById('res-restante').innerHTML = `
         00:00:00 <br>
         <small style="font-size: 0.75em; font-weight: bold; color: var(--success, #10b981);">
           (+${formatSecs(extraSecs)} extra)
         </small>
+        <div class="mensaje-extra" style="font-size: 0.7em; color: #3a83b3; margin-top: 4px; font-weight: 500; opacity: 0.9;">
+          ${mensajeExtra}
+        </div>
       `;
       document.getElementById('res-salida').textContent = secsToHHMMSS(salidaSecs);
     } else {
@@ -211,7 +215,7 @@ function calcular() {
   } else {
     // Fichado dentro y jornada sin terminar
     const restanteSecs = jornadaSecs - trabajadoSecs;
-    const salidaSecs   = ultimaEntrada + restanteSecs;
+    const salidaSecs = ultimaEntrada + restanteSecs;
 
     let restanteDesdeAhoraSecs = salidaSecs - ahoraSecs;
     if (restanteDesdeAhoraSecs < 0) restanteDesdeAhoraSecs = 0;
@@ -301,6 +305,7 @@ btnKairos.addEventListener('click', async () => {
     document.getElementById('kairos-dni-label').textContent = `¡Hola, ${nombre}!`;
 
     localStorage.setItem('kairos_dni', nif);
+    localStorage.setItem('kairos_mensaje_extra', authData.mensaje_extra || '');
     setKairosStatus('loading', 'Conectando con KairosHR…');
 
     const hoy = new Date().toISOString().slice(0, 10);

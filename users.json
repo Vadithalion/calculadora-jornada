@@ -3,36 +3,42 @@
         "nombre": "Iñigo",
         "apellido": "Vadillo",
         "dni": "72722156C",
-        "codigo": "6666"
+        "codigo": "6666",
+        "mensaje_extra": "Vete a que te de el sol!"
     },
     {
         "nombre": "Rebeca",
         "apellido": "Soto",
         "dni": "29211235Q",
-        "codigo": "1988"
+        "codigo": "1988",
+        "mensaje_extra": "Vete a que te de el sol!"
     },
     {
         "nombre": "Kilian",
         "apellido": "Martinez",
         "dni": "21699590X",
-        "codigo": "2008"
+        "codigo": "2008",
+        "mensaje_extra": "Vete a que te de el sol!"
     },
     {
         "nombre": "Bilal",
         "apellido": "Naim",
         "dni": "23939154H",
-        "codigo": "1902"
+        "codigo": "1902",
+        "mensaje_extra": "Vete a que te de el sol!"
     },
-	{
+    {
         "nombre": "Esther",
         "apellido": "Silla",
         "dni": "85086822R",
-        "codigo": "1407"
+        "codigo": "1407",
+        "mensaje_extra": "Vete a que te de el sol!"
     },
-	{
+    {
         "nombre": "Miguel",
         "apellido": "Blanch",
         "dni": "24336069E",
-        "codigo": "2192"
+        "codigo": "2192",
+        "mensaje_extra": "Vete a que te de el sol!"
     }
 ]
