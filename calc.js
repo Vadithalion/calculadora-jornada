@@ -105,6 +105,12 @@ function calcular() {
   errorMsg.textContent = '';
   resultado.hidden = true;
 
+  const banner = document.getElementById('resultado-banner');
+  if (banner) {
+    banner.style.display = 'none';
+    banner.textContent = '';
+  }
+
   // Jornada configurada en segundos
   const h = parseInt(inputHoras.value);
   const m = parseInt(inputMinutos.value);
@@ -187,11 +193,13 @@ function calcular() {
         <small style="font-size: 0.75em; font-weight: bold; color: var(--success, #10b981);">
           (+${formatSecs(extraSecs)} extra)
         </small>
-        <div class="mensaje-extra" style="font-size: 0.7em; color: #3a83b3; margin-top: 4px; font-weight: 500; opacity: 0.9;">
-          ${mensajeExtra}
-        </div>
       `;
       document.getElementById('res-salida').textContent = secsToHHMMSS(salidaSecs);
+
+      if (banner) {
+        banner.textContent = mensajeExtra;
+        banner.style.display = 'block';
+      }
     } else {
       // Fichado fuera y jornada completada
       document.getElementById('res-restante').innerHTML = `

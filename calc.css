@@ -453,6 +453,26 @@ body {
   animation: fadeIn 0.35s ease;
   background: #fff;
   display: flex;
+  flex-direction: column;
+}
+
+.resultado-main {
+  display: flex;
+  flex-direction: row;
+}
+
+.resultado-banner {
+  background: rgba(58, 131, 179, 0.08);
+  border-top: 1px solid var(--cream-d);
+  padding: 12px 22px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #3a83b3;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.45;
+  animation: fadeIn 0.35s ease;
 }
 
 .resultado-info {
@@ -730,6 +750,6 @@ body {
   .header-inner { flex-direction: column; align-items: flex-start; gap: 4px; }
   .kairos-form { flex-direction: column; align-items: stretch; }
   .btn-kairos { width: 100%; justify-content: center; }
-  .resultado { flex-direction: column-reverse; }
+  .resultado-main { flex-direction: column-reverse; }
   .resultado-progress { border-left: none; border-bottom: 1px solid var(--cream-d); padding: 20px; min-width: auto; }
 }

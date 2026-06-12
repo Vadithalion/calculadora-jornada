@@ -99,37 +99,40 @@
 
       <!-- Resultado -->
       <div class="resultado" id="resultado" hidden>
-        <div class="resultado-info">
-          <div class="resultado-item">
-            <div class="resultado-icon">🕐</div>
-            <div class="resultado-data">
-              <span class="res-label">Tiempo trabajado</span>
-              <span class="res-valor" id="res-trabajado">—</span>
+        <div class="resultado-main">
+          <div class="resultado-info">
+            <div class="resultado-item">
+              <div class="resultado-icon">🕐</div>
+              <div class="resultado-data">
+                <span class="res-label">Tiempo trabajado</span>
+                <span class="res-valor" id="res-trabajado">—</span>
+              </div>
+            </div>
+            <div class="resultado-item">
+              <div class="resultado-icon">⏳</div>
+              <div class="resultado-data">
+                <span class="res-label">Jornada restante</span>
+                <span class="res-valor" id="res-restante">—</span>
+              </div>
+            </div>
+            <div class="resultado-item highlight">
+              <div class="resultado-icon">🚪</div>
+              <div class="resultado-data">
+                <span class="res-label">Hora de salida</span>
+                <span class="res-valor grande" id="res-salida">—</span>
+              </div>
             </div>
           </div>
-          <div class="resultado-item">
-            <div class="resultado-icon">⏳</div>
-            <div class="resultado-data">
-              <span class="res-label">Jornada restante</span>
-              <span class="res-valor" id="res-restante">—</span>
-            </div>
-          </div>
-          <div class="resultado-item highlight">
-            <div class="resultado-icon">🚪</div>
-            <div class="resultado-data">
-              <span class="res-label">Hora de salida</span>
-              <span class="res-valor grande" id="res-salida">—</span>
-            </div>
+          <div class="resultado-progress">
+            <svg class="progress-ring" width="120" height="120">
+              <circle class="progress-ring__background" stroke="rgba(8,15,30,0.06)" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"/>
+              <circle class="progress-ring__circle" stroke="yellowgreen" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"
+                      stroke-dasharray="301.6" stroke-dashoffset="301.6" />
+            </svg>
+            <div class="progress-icon" id="progress-icon">🕐</div>
           </div>
         </div>
-        <div class="resultado-progress">
-          <svg class="progress-ring" width="120" height="120">
-            <circle class="progress-ring__background" stroke="rgba(8,15,30,0.06)" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"/>
-            <circle class="progress-ring__circle" stroke="yellowgreen" stroke-width="8" fill="transparent" r="48" cx="60" cy="60"
-                    stroke-dasharray="301.6" stroke-dashoffset="301.6" />
-          </svg>
-          <div class="progress-icon" id="progress-icon">🕐</div>
-        </div>
+        <div class="resultado-banner" id="resultado-banner" style="display: none;"></div>
       </div>
 
     </div>
