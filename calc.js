@@ -275,6 +275,13 @@ const kairosStatus = document.getElementById('kairos-status');
 const kairosDniEl = document.getElementById('kairos-dni');
 const kairosCodeEl = document.getElementById('kairos-code');
 
+// Permitir lanzar la petición pulsando Enter en cualquiera de los dos inputs
+[kairosDniEl, kairosCodeEl].forEach(input => {
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') btnKairos.click();
+  });
+});
+
 btnKairos.addEventListener('click', async () => {
   const nif = kairosDniEl.value.trim().toUpperCase();
   const codigo = kairosCodeEl.value.trim();
