@@ -363,6 +363,8 @@ btnKairos.addEventListener('click', async () => {
 
     setKairosStatus('ok', `✓ ${pares.length} tramo(s) importado(s) correctamente${infoJornada}.`);
 
+    // Ejecutar el cálculo automáticamente tras importar los fichajes
+    calcular();
   } catch (err) {
     console.error('[KairosHR]', err);
     setKairosStatus('error', err.message || 'Error inesperado al conectar con la API.');
